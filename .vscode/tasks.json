@@ -1,0 +1,21 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "fu_hello",
+            "type": "shell",
+            "command": "./fu_batch_task.bat",
+            "args": [
+                // Required argument is the name (without trailing .py extension)
+                // of the Python-Fu script to launch
+                "fu_hello",
+                // Optional Python-Fu script arguments
+                "World",
+                "Me"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

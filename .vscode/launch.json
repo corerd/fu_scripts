@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "fu_hello PS1",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/fu_batch_task.ps1",
+            "args": [
+                // Required argument is the name (without trailing .py extension)
+                // of the Python-Fu script to launch
+                "fu_hello",
+                // Optional Python-Fu script arguments
+                "World",
+                "Me"
+            ]
+        }
+    ]
+}
