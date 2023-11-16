@@ -1,9 +1,11 @@
-# Call GIMP to run a Python-Fu script from command line?
+# Call GIMP to run a Python-Fu script from command line
 # See: https://stackoverflow.com/a/44435560
 #
-# Syntax: fu_batch_task.ps1 python-fu-module-name [optional-python-arguments...]
+# Syntax: fu_batch_task.ps1 python-fu-module-name [fu_arg_1 [fu_arg_2 [... fu_arg_N]]]
 #
-# python-fu-module-name is the script file name without the .py extension
+# python-fu-module-name is the script file name without the .py extension.
+# fu_args are the optional parameters for the Python-Fu module.
+# Parameter list entries don't include quotes and are separated by spaces, NOT commas.
 
 # Get GIMP istallation path.
 # See: Finding the full path to an executable on Windows (more than a "which" equivalent)
@@ -30,25 +32,25 @@ if (!(Test-Path $GIMP_PATH))
 # Check calling argumests
 if ($args.Count -eq 0) {
     Write-Host "ERROR: No arguments supplied."
-    Write-Host "Syntax: fu_batch_task.ps1 python-fu-module-name [optional-python-arguments...]"
+    Write-Host "Syntax: fu_batch_task.ps1 python-fu-module-name [fu_arg_1 [fu_arg_2 [... fu_arg_N]]]"
     exit
 }
 
 # From the calling arguments, esctract the Python-Fu module name and its optional parameters
-$python_args = ""
+$fu_args = ""
 $argc = 0
 foreach ($arg in $args) {
     if ($argc -eq 0) {
-        # Assign the Python-Fu script name from the first mandatory argument
+        # Extract the Python-Fu module name from the first mandatory argument
         $fu_script = $arg
     } else {
-        # The remaining optional aruguments are assigned
-        # to Python comma separated single quoted parameters list
-        # (Escape single quotes using backtick character (`))
-        if ([string]::IsNullOrEmpty($python_args)) {
-            $python_args = "`'$arg`'"
+        # The remaining optional aruguments are given to Python-Fu module
+        # as comma separated single quoted parameters list,
+        # escaping single quotes using backtick character (`).
+        if ([string]::IsNullOrEmpty($fu_args)) {
+            $fu_args = "`'$arg`'"
         } else {
-            $python_args += ", `'$arg`'"
+            $fu_args += ", `'$arg`'"
         }
     }
     $argc += 1
@@ -69,19 +71,19 @@ $gimp_args += "--batch-interpreter python-fu-eval "
 #   - double quotes for GIMP
 #   - single quotes for Python
 # In a Linux/OSX shell one would do the opposite.
-# In PowerShell, escaoe double and single quotes using backtick character (`).
-$gimp_args += "-b `"import sys;sys.path=[`'.`']+sys.path;import $fu_script;$fu_script.run($python_args)`" "
+# In PowerShell, escape double and single quotes using backtick character (`).
+$gimp_args += "-b `"import sys;sys.path=[`'.`']+sys.path;import $fu_script;$fu_script.run($fu_args)`" "
 # Namely:
 #   - import sys;sys.path=[`'.`']+sys.path; : extend the import path to include the current directory
 #   - import $fu_script; : import the given Python-Fu module, which is now in a directory which is part of the path
-#   - $fu_script.run($python_args) : call the run() function of the imported $fu_script module with $python_args
+#   - $fu_script.run($fu_args) : call the run() function of the imported $fu_script giving its $fu_args
 
 # Another piece of Python code to exit when done
 $gimp_args += "-b `"pdb.gimp_quit(1)`" "
 
 # Start GIMP
-Write-Host "Start" $GIMP_APP.Name "to run Python-Fu script:"
-Write-Host "$fu_script($python_args)"
+Write-Host "Call" $GIMP_APP.Name "to run Python-Fu module:"
+Write-Host "$fu_script($fu_args)"
 Start-Process -FilePath $GIMP_PATH -ArgumentList $gimp_args
 
 # Debugging tips
