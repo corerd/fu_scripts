@@ -53,6 +53,10 @@ def run(image_file_path, layer_base_name):
     """Select a group of layers from image by their base_name,
     then merge them incrementally and export to PNG.
     """
+    if not os.path.exists(image_file_path):
+        gimp.message('GIMP file not found: {}'.format(image_file_path))
+        return
+
     image_file_folder, image_file_name = os.path.split(image_file_path)
     png_output_folder = image_file_folder + os.sep + 'PNG'
 
